@@ -18,14 +18,10 @@ import {
 } from '../../constants/responsive';
 import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
+import {FormErrors, LoginFormData} from '../../types/forms';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
-}
-
-interface FormErrors {
-  email: string;
-  password: string;
 }
 
 interface FormData {

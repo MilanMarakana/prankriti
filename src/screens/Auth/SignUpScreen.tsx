@@ -19,6 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {FormFields, SignUpFormData, SignUpFormErrors} from '../../types/forms';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;

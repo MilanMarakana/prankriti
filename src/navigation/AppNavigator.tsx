@@ -14,6 +14,10 @@ import ForgetPasswordScreen from '../screens/Auth/ForgetPasswordScreen';
 import VerificationCodeScreen from '../screens/Auth/VerificationCodeScreen';
 import NewPasswordScreen from '../screens/Auth/NewPasswordScreen';
 import ResetPwdSuccessScreen from '../screens/Auth/ResetPwdSuccessScreen';
+import GetStartWithLocScreen from '../screens/Location/GetStartWithLocScreen';
+import SelectLocationScreen from '../screens/Location/SelectLocationScreen';
+import MapLocationScreen from '../screens/Location/MapLocationScreen';
+import {Region} from 'react-native-maps';
 
 // Define the type for our stack navigator
 export type RootStackParamList = {
@@ -32,6 +36,25 @@ export type RootStackParamList = {
     | undefined;
   NewPassword: undefined;
   ResetPwdSuccess: undefined;
+  GetStartWithLoc: undefined;
+  SelectLocation:
+    | {
+        latitude?: number;
+        longitude?: number;
+        manual?: boolean;
+        searchText?: string;
+        region?: Region;
+      }
+    | undefined;
+  MapLocation:
+    | {
+        latitude?: number;
+        longitude?: number;
+        manual?: boolean;
+        searchText?: string;
+        region?: Region;
+      }
+    | undefined;
   // Add other screen types here as we create them
   // Login: undefined;
 };
@@ -73,6 +96,12 @@ const AppNavigator = () => {
           name="ResetPwdSuccess"
           component={ResetPwdSuccessScreen}
         />
+        <Stack.Screen
+          name="GetStartWithLoc"
+          component={GetStartWithLocScreen}
+        />
+        <Stack.Screen name="SelectLocation" component={SelectLocationScreen} />
+        <Stack.Screen name="MapLocation" component={MapLocationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

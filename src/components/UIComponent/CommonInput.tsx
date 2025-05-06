@@ -13,29 +13,7 @@ import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {FONT_SIZE} from '../../constants/responsive';
 import {SCREEN_WIDTH} from '../../constants/responsive';
-
-interface IconElement extends React.ReactElement {
-  props: {
-    color?: string;
-    [key: string]: any;
-  };
-}
-
-interface CommonInputProps extends TextInputProps {
-  label?: string;
-  error?: string;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  onRightIconPress?: () => void;
-  containerStyle?: ViewStyle;
-  inputContainerStyle?: ViewStyle;
-  inputStyle?: TextStyle;
-  labelStyle?: TextStyle;
-  errorStyle?: TextStyle;
-  required?: boolean;
-  validateInput?: (text: string) => string | undefined;
-  onChangeValidation?: (error: string | undefined) => void;
-}
+import {IconElement, CommonInputProps} from '../../types/components';
 
 const CommonInput: React.FC<CommonInputProps> = ({
   label,

@@ -51,8 +51,8 @@ const SplashScreen: React.FC<Props> = ({navigation}) => {
     // Navigate to next screen after animations
     const timer = setTimeout(() => {
       console.log('Navigation timer completed');
-      navigation.replace('GetStarted');
-      // navigation.replace('VerificationCode');
+      // navigation.replace('GetStarted');
+      navigation.replace('GetStartWithLoc');
     }, 2500); // Total animation time + extra delay
 
     return () => {

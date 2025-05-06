@@ -7,12 +7,14 @@ interface OnboardingLayoutProps {
   children: React.ReactNode;
   contentContainerStyle?: ViewStyle;
   showLogo?: boolean;
+  logoStyle?: any;
 }
 
 const MostCommonLayout: React.FC<OnboardingLayoutProps> = ({
   children,
   contentContainerStyle,
   showLogo = true,
+  logoStyle,
 }) => {
   return (
     <View style={styles.container}>
@@ -35,7 +37,7 @@ const MostCommonLayout: React.FC<OnboardingLayoutProps> = ({
           <View style={styles.logoContainer}>
             <Image
               source={require('../../assets/images/logo.png')}
-              style={styles.logo}
+              style={[styles.logo, logoStyle]}
               resizeMode="contain"
             />
           </View>
@@ -67,7 +69,7 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: '100%',
     paddingTop: SCREEN_HEIGHT * 0.1,
-    marginLeft: SCREEN_WIDTH * 0.07,
+    alignItems: 'center',
   },
   logo: {
     width: SCREEN_WIDTH * 0.4,

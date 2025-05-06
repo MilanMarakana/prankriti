@@ -4,16 +4,7 @@ import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {FONT_SIZE, BUTTON_SIZE} from '../../constants/responsive';
 import {SCREEN_WIDTH} from '../../constants/responsive';
-
-interface CommonBtnProps {
-  title: string;
-  onPress: () => void;
-  style?: object;
-  textStyle?: object;
-  isIcon?: boolean;
-  icon?: any;
-  isDisabled?: boolean;
-}
+import {CommonBtnProps} from '../../types/components';
 
 const CommonBtn: React.FC<CommonBtnProps> = ({
   title,
