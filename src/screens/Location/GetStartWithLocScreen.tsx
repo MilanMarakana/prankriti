@@ -42,8 +42,8 @@ const GetStartWithLocScreen = () => {
         if (!hasPermission) {
           await requestPermission();
         }
-      } catch (error) {
-        console.error('Error initializing location:', error);
+      } catch (err) {
+        console.error('Error initializing location:', err);
         Alert.alert(
           'Error',
           'Failed to initialize location services. Please try again.',
@@ -59,16 +59,16 @@ const GetStartWithLocScreen = () => {
       setError(null);
 
       // First check if we have permission
-      // if (!hasPermission) {
-      //   const permissionGranted = await requestPermission();
-      //   if (!permissionGranted) {
-      //     Alert.alert(
-      //       'Location Permission Required',
-      //       'Please enable location services in your device settings to use this feature.',
-      //     );
-      //     return;
-      //   }
-      // }
+      if (!hasPermission) {
+        const permissionGranted = await requestPermission();
+        if (!permissionGranted) {
+          Alert.alert(
+            'Location Permission Required',
+            'Please enable location services in your device settings to use this feature.',
+          );
+          return;
+        }
+      }
 
       // Now get the location
       const location = await getCurrentLocation();

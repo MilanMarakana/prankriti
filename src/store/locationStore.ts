@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import {Platform, Alert} from 'react-native';
 import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation from '@react-native-community/geolocation';
 
 interface LocationState {
   hasPermission: boolean;
@@ -95,55 +95,55 @@ export const useLocationStore = create<LocationState>((set, get) => ({
   },
 
   getCurrentLocation: async () => {
-    // const {hasPermission} = get();
+    const {hasPermission} = get();
 
-    // if (!hasPermission) {
-    //   const granted = await get().requestPermission();
-    //   if (!granted) {
-    //     return null;
-    //   }
-    // }
+    if (!hasPermission) {
+      const granted = await get().requestPermission();
+      if (!granted) {
+        return null;
+      }
+    }
 
-    set({isLoading: true});
+    set({isLoading: true, error: null});
 
     try {
-      return await new Promise((resolve, reject) => {
-        Geolocation.getCurrentPosition(
-          position => {
-            console.log('position', position);
-            const location = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            };
-            set({currentLocation: location, error: null});
-            resolve(location);
-          },
-          error => {
-            console.error('Geolocation error:', error);
-            const errorMessage =
-              error.code === 1
-                ? 'Location permission denied'
-                : error.code === 2
-                ? 'Location unavailable'
-                : 'Failed to get current location';
+      return await new Promise<{latitude: number; longitude: number} | null>(
+        (resolve, reject) => {
+          Geolocation.getCurrentPosition(
+            position => {
+              const location = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              };
+              set({currentLocation: location, error: null});
+              resolve(location);
+            },
+            error => {
+              console.error('Location error:', error);
+              const errorMessage =
+                error.code === 1
+                  ? 'Location permission denied'
+                  : error.code === 2
+                  ? 'Location unavailable'
+                  : 'Failed to get current location';
 
-            set({error: errorMessage});
-            Alert.alert(
-              'Location Error',
-              'Unable to get your current location. Please try again or select location manually.',
-            );
-            reject(error);
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 10000,
-            distanceFilter: 10,
-          },
-        );
-      });
+              set({error: errorMessage});
+              Alert.alert(
+                'Location Error',
+                'Unable to get your current location. Please try again or select location manually.',
+              );
+              reject(error);
+            },
+            {
+              // enableHighAccuracy: true,
+              timeout: 15000,
+              maximumAge: 10000,
+            },
+          );
+        },
+      );
     } catch (error) {
-      console.error('Geolocation error:', error);
+      console.error('Location error:', error);
       return null;
     } finally {
       set({isLoading: false});

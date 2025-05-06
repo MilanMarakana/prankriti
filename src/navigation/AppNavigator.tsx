@@ -17,6 +17,7 @@ import ResetPwdSuccessScreen from '../screens/Auth/ResetPwdSuccessScreen';
 import GetStartWithLocScreen from '../screens/Location/GetStartWithLocScreen';
 import SelectLocationScreen from '../screens/Location/SelectLocationScreen';
 import MapLocationScreen from '../screens/Location/MapLocationScreen';
+import SuccessLocationScreen from '../screens/Location/SuccessLocationScreen';
 import {Region} from 'react-native-maps';
 
 // Define the type for our stack navigator
@@ -53,6 +54,11 @@ export type RootStackParamList = {
         manual?: boolean;
         searchText?: string;
         region?: Region;
+      }
+    | undefined;
+  SuccessLocation:
+    | {
+        serviceable: boolean;
       }
     | undefined;
   // Add other screen types here as we create them
@@ -102,6 +108,10 @@ const AppNavigator = () => {
         />
         <Stack.Screen name="SelectLocation" component={SelectLocationScreen} />
         <Stack.Screen name="MapLocation" component={MapLocationScreen} />
+        <Stack.Screen
+          name="SuccessLocation"
+          component={SuccessLocationScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

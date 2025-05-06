@@ -81,6 +81,7 @@ const SelectLocationScreen = () => {
 
   const [address, setAddress] = useState<string | null>(null);
   const [addressLoading, setAddressLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
   // When currentLocation changes, fetch the address
   useEffect(() => {
@@ -131,6 +132,39 @@ const SelectLocationScreen = () => {
         'Permission required',
         'Location permission is required to access your location.',
       );
+    }
+  };
+
+  const handleContinue = async () => {
+    if (!search.trim()) {
+      Alert.alert('Please enter a location to search.');
+      return;
+    }
+    try {
+      const res = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          search,
+        )}&key=${GOOGLE_MAPS_API_KEY}`,
+      );
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        const {lat, lng} = data.results[0].geometry.location;
+        navigation.navigate('MapLocation', {
+          latitude: lat,
+          longitude: lng,
+          searchText: search,
+          region: {
+            latitude: lat,
+            longitude: lng,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+        });
+      } else {
+        Alert.alert('No location found for this search.');
+      }
+    } catch (e) {
+      Alert.alert('Failed to find location. Please try again.');
     }
   };
 
@@ -214,6 +248,8 @@ const SelectLocationScreen = () => {
           }
           inputContainerStyle={styles.searchInputContainer}
           inputStyle={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
         />
         {renderLocationBox()}
         <View style={styles.recentHeaderRow}>
@@ -248,15 +284,7 @@ const SelectLocationScreen = () => {
         <View style={styles.bottomContainer}>
           <CommonBtn
             title="Continue"
-            onPress={() => {
-              navigation.navigate('MapLocation', {
-                latitude: currentLocation?.latitude,
-                longitude: currentLocation?.longitude,
-                manual: route.params?.manual,
-                searchText: route.params?.searchText,
-                region: route.params?.region,
-              });
-            }}
+            onPress={handleContinue}
             style={styles.continueBtn}
             textStyle={styles.continueBtnText}
           />
