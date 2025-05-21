@@ -24,19 +24,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import {useLocationStore} from '../../store/locationStore';
 import {RouteProp, useRoute, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../navigation/AppNavigator';
-import {Region} from 'react-native-maps';
+import {RootStackParamList} from '../../types/navigation';
+import {SelectLocationParams, LocationSearchResult} from '../../types/location';
+import locationService from '../../services/locationService';
 
-// Define params locally
-export type SelectLocationParams = {
-  latitude?: number;
-  longitude?: number;
-  manual?: boolean;
-  searchText?: string;
-  region?: Region;
-};
-
-const RECENT_SEARCHES = [
+const RECENT_SEARCHES: LocationSearchResult[] = [
   {
     title: 'Indira Nagar',
     subtitle: '4th Main Rd, Indira Nagar, Adyar, Chennai, Tamil Nadu',
@@ -63,8 +55,6 @@ const RECENT_SEARCHES = [
   },
 ];
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBHmAdy8oCV1hv5AQTdwcv4q6wz-tenXlQ'; // Replace with your real key or use env variable
-
 const SelectLocationScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -81,29 +71,22 @@ const SelectLocationScreen = () => {
 
   const [address, setAddress] = useState<string | null>(null);
   const [addressLoading, setAddressLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
-  // When currentLocation changes, fetch the address
   useEffect(() => {
     if (currentLocation) {
       setAddress(null);
       setAddressLoading(true);
-      fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentLocation.latitude},${currentLocation.longitude}&key=${GOOGLE_MAPS_API_KEY}`,
-      )
-        .then(res => res.json())
-        .then(data => {
-          if (data.results && data.results.length > 0) {
-            setAddress(data.results[0].formatted_address);
-          } else {
-            setAddress(null);
-          }
+      locationService
+        .getAddressFromCoordinates(currentLocation)
+        .then(address => {
+          setAddress(address);
         })
         .catch(() => setAddress(null))
         .finally(() => setAddressLoading(false));
     }
   }, [currentLocation]);
 
-  // Only update store from route params if not manual
   useEffect(() => {
     if (route.params?.manual) {
       return;
@@ -118,7 +101,6 @@ const SelectLocationScreen = () => {
     }
   }, [route.params]);
 
-  // Handler for tapping the allow location access box
   const handleAllowLocationAccess = async () => {
     const granted = await requestPermission();
     if (granted) {
@@ -131,6 +113,33 @@ const SelectLocationScreen = () => {
         'Permission required',
         'Location permission is required to access your location.',
       );
+    }
+  };
+
+  const handleContinue = async () => {
+    if (!search.trim()) {
+      Alert.alert('Please enter a location to search.');
+      return;
+    }
+    try {
+      const result = await locationService.getCoordinatesFromAddress(search);
+      if (result) {
+        navigation.navigate('MapLocation', {
+          latitude: result.geometry.location.lat,
+          longitude: result.geometry.location.lng,
+          searchText: search,
+          region: {
+            latitude: result.geometry.location.lat,
+            longitude: result.geometry.location.lng,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          },
+        });
+      } else {
+        Alert.alert('No location found for this search.');
+      }
+    } catch (e) {
+      Alert.alert('Failed to find location. Please try again.');
     }
   };
 
@@ -160,7 +169,6 @@ const SelectLocationScreen = () => {
       );
     }
 
-    // If manual param is set, show the allow location access box as a button
     if (route.params?.manual) {
       return (
         <TouchableOpacity
@@ -214,6 +222,8 @@ const SelectLocationScreen = () => {
           }
           inputContainerStyle={styles.searchInputContainer}
           inputStyle={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
         />
         {renderLocationBox()}
         <View style={styles.recentHeaderRow}>
@@ -248,15 +258,7 @@ const SelectLocationScreen = () => {
         <View style={styles.bottomContainer}>
           <CommonBtn
             title="Continue"
-            onPress={() => {
-              navigation.navigate('MapLocation', {
-                latitude: currentLocation?.latitude,
-                longitude: currentLocation?.longitude,
-                manual: route.params?.manual,
-                searchText: route.params?.searchText,
-                region: route.params?.region,
-              });
-            }}
+            onPress={handleContinue}
             style={styles.continueBtn}
             textStyle={styles.continueBtnText}
           />
@@ -282,7 +284,6 @@ const styles = StyleSheet.create({
     color: COLORS.LIGHT_WHITE,
     fontSize: FONT_SIZE.xxl,
     fontFamily: FONT_FAMILY.BOLD,
-    // marginBottom: SCREEN_HEIGHT * 0.02,
   },
   searchInputContainer: {
     borderRadius: 16,

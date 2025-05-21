@@ -7,7 +7,7 @@ import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {FONT_SIZE} from '../../constants/responsive';
 import {SCREEN_HEIGHT, SCREEN_WIDTH} from '../../constants/responsive';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -23,7 +23,7 @@ const IntroScreen: React.FC<Props> = ({navigation}) => {
           resizeMode="contain"
         />
         <View style={styles.textContainer}>
-          <Text style={styles.heading}>Let’s break down what we do?</Text>
+          <Text style={styles.heading}>Let's break down what we do?</Text>
           <Text style={styles.text}>
             Personalized plant care reminders, Growth tracking tips, Community
             support & expert advice.

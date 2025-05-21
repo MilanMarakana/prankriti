@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import {View, Image, StyleSheet, StatusBar, Animated} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 import {FONT_FAMILY, FONT_WEIGHTS} from '../../constants/fonts';
 import {COLORS} from '../../constants/colors';
 import RNSplashScreen from 'react-native-splash-screen';
@@ -52,7 +52,7 @@ const SplashScreen: React.FC<Props> = ({navigation}) => {
     const timer = setTimeout(() => {
       console.log('Navigation timer completed');
       // navigation.replace('GetStarted');
-      navigation.replace('GetStartWithLoc');
+      navigation.replace('MainTabs');
     }, 2500); // Total animation time + extra delay
 
     return () => {

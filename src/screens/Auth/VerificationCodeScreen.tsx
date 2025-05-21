@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {

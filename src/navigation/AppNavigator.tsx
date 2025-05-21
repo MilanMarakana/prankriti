@@ -17,47 +17,15 @@ import ResetPwdSuccessScreen from '../screens/Auth/ResetPwdSuccessScreen';
 import GetStartWithLocScreen from '../screens/Location/GetStartWithLocScreen';
 import SelectLocationScreen from '../screens/Location/SelectLocationScreen';
 import MapLocationScreen from '../screens/Location/MapLocationScreen';
-import {Region} from 'react-native-maps';
-
-// Define the type for our stack navigator
-export type RootStackParamList = {
-  Splash: undefined;
-  Onboarding: undefined;
-  GetStarted: undefined;
-  Intro: undefined;
-  SignUpWithSocial: undefined;
-  Verified: undefined;
-  Login: undefined;
-  SignUp: undefined;
-  SuccessSignUp: undefined;
-  ForgetPassword: undefined;
-  VerificationCode:
-    | {method: 'email' | 'phone' | null; detail: string}
-    | undefined;
-  NewPassword: undefined;
-  ResetPwdSuccess: undefined;
-  GetStartWithLoc: undefined;
-  SelectLocation:
-    | {
-        latitude?: number;
-        longitude?: number;
-        manual?: boolean;
-        searchText?: string;
-        region?: Region;
-      }
-    | undefined;
-  MapLocation:
-    | {
-        latitude?: number;
-        longitude?: number;
-        manual?: boolean;
-        searchText?: string;
-        region?: Region;
-      }
-    | undefined;
-  // Add other screen types here as we create them
-  // Login: undefined;
-};
+import SuccessLocationScreen from '../screens/Location/SuccessLocationScreen';
+import SubscribeScreen from '../screens/Payment/SubscribeScreen';
+import PaymentMethodScreen from '../screens/Payment/PaymentMethodScreen';
+import AddCardScreen from '../screens/Payment/AddCardScreen';
+import SuccessSubscribeScreen from '../screens/Payment/SuccessSubscribeScreen';
+import DashboardScreen from '../screens/Dashboard/DashboardScreen';
+import SwipeTabNavigator from './SwipeTabNavigator';
+import PlantDetails from '../screens/Home/PlantDetails';
+import {RootStackParamList} from '../types/navigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -102,6 +70,24 @@ const AppNavigator = () => {
         />
         <Stack.Screen name="SelectLocation" component={SelectLocationScreen} />
         <Stack.Screen name="MapLocation" component={MapLocationScreen} />
+        <Stack.Screen
+          name="SuccessLocation"
+          component={SuccessLocationScreen}
+        />
+        <Stack.Screen name="Subscribe" component={SubscribeScreen} />
+        <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} />
+        <Stack.Screen name="AddCard" component={AddCardScreen} />
+        <Stack.Screen
+          name="SuccessSubscribe"
+          component={SuccessSubscribeScreen}
+        />
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <Stack.Screen
+          name="MainTabs"
+          component={SwipeTabNavigator}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen name="PlantDetails" component={PlantDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

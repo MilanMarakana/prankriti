@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     paddingHorizontal: SCREEN_WIDTH * 0.05,
-    alignItems: 'center',
+    // alignItems: 'center',
   },
 });
 
