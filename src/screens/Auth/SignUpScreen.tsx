@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, Pressable, Image} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {validateSignUpForm} from '../../utils/validation';
@@ -19,14 +19,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {FormFields, SignUpFormData, SignUpFormErrors} from '../../types/forms';
+import {FormFields} from '../../types/forms';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList>;
 }
 
 // Define form field types to ensure consistency
-type FormFields = 'name' | 'mobile' | 'email' | 'password';
 
 interface FormData {
   name: string;

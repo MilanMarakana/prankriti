@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {FONT_SIZE} from '../../constants/responsive';

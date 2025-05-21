@@ -30,6 +30,6 @@ export interface CommonBtnProps {
   style?: object;
   textStyle?: object;
   isIcon?: boolean;
-  icon?: any;
+  icon?: React.ReactNode | number;
   isDisabled?: boolean;
 }

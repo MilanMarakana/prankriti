@@ -1,19 +1,34 @@
 import React from 'react';
 import {View, Text, StyleSheet, Pressable} from 'react-native';
 import {NavigationProp} from '@react-navigation/native';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY, FONT_WEIGHTS} from '../../constants/fonts';
 import CommonLayout from '../../components/CommonLayout/CommonLayout';
 import CommonBtn from '../../components/UIComponent/commonBtn';
 import {FONT_SIZE} from '../../constants/responsive';
 import {SCREEN_WIDTH, SCREEN_HEIGHT} from '../../constants/responsive';
+import {useAuthStore} from '../../store/authStore';
 
 interface Props {
   navigation: NavigationProp<RootStackParamList>;
 }
 
 const GetStartedScreen: React.FC<Props> = ({navigation}) => {
+  const setGuestMode = useAuthStore(state => state?.setGuestMode);
+
+  const handleGuestAccess = () => {
+    if (setGuestMode) {
+      setGuestMode(true);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'MainTabs'}],
+      });
+    } else {
+      console.log('setGuestMode is not defined');
+    }
+  };
+
   return (
     <CommonLayout>
       <View style={styles.container}>
@@ -27,15 +42,21 @@ const GetStartedScreen: React.FC<Props> = ({navigation}) => {
             title="Get Started →"
             onPress={() => navigation.navigate('Onboarding')}
           />
-          <Pressable
-            onPress={() => {
-              navigation.navigate('Login');
-            }}>
-            <Text style={styles.loginText}>
-              Already have an account?{' '}
-              <Text style={styles.loginLink}>Log in</Text>
-            </Text>
-          </Pressable>
+          <View style={styles.loginContainer}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Login');
+              }}>
+              <Text style={styles.loginText}>
+                Already have an account?{' '}
+                <Text style={styles.loginLink}>Log in</Text>
+              </Text>
+            </Pressable>
+            <View style={styles.divider} />
+            <Pressable onPress={handleGuestAccess}>
+              <Text style={styles.loginText}>Continue as guest</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </CommonLayout>
@@ -65,6 +86,12 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  loginContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   button: {
     backgroundColor: COLORS.PRIMARY,
     width: '100%',
@@ -76,7 +103,7 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: COLORS.WHITE,
-    fontSize: FONT_SIZE.md,
+    fontSize: FONT_SIZE.sm,
     fontFamily: FONT_FAMILY.MEDIUM,
     textAlign: 'center',
   },
@@ -84,6 +111,12 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
     fontFamily: FONT_FAMILY.MEDIUM,
     fontWeight: FONT_WEIGHTS.MEDIUM,
+  },
+  divider: {
+    width: SCREEN_WIDTH * 0.001,
+    height: SCREEN_HEIGHT * 0.02,
+    backgroundColor: COLORS.LIGHT_GRAY,
+    marginHorizontal: SCREEN_WIDTH * 0.02,
   },
 });
 

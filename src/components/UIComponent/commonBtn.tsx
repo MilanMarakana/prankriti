@@ -1,10 +1,23 @@
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet, Image} from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Image,
+  ImageSourcePropType,
+} from 'react-native';
 import {COLORS} from '../../constants/colors';
 import {FONT_FAMILY} from '../../constants/fonts';
 import {FONT_SIZE, BUTTON_SIZE} from '../../constants/responsive';
 import {SCREEN_WIDTH} from '../../constants/responsive';
 import {CommonBtnProps} from '../../types/components';
+
+function isImageSource(icon: any): icon is ImageSourcePropType {
+  return (
+    typeof icon === 'number' ||
+    (typeof icon === 'object' && icon !== null && 'uri' in icon)
+  );
+}
 
 const CommonBtn: React.FC<CommonBtnProps> = ({
   title,
@@ -20,7 +33,13 @@ const CommonBtn: React.FC<CommonBtnProps> = ({
       style={[styles.button, style]}
       onPress={onPress}
       disabled={isDisabled}>
-      {isIcon && <Image source={icon} style={styles.buttonImage} />}
+      {isIcon &&
+        icon &&
+        (React.isValidElement(icon) ? (
+          icon
+        ) : isImageSource(icon) ? (
+          <Image source={icon} style={styles.buttonImage} />
+        ) : null)}
       <Text style={[styles.buttonText, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );

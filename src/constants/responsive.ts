@@ -52,6 +52,7 @@ export const SPACING = {
   xs: scale(4),
   sm: scale(8),
   md: scale(16),
+  md_ex: scale(18),
   lg: scale(24),
   xl: scale(32),
   xxl: scale(40),
@@ -59,6 +60,7 @@ export const SPACING = {
 
 // Font Sizes
 export const FONT_SIZE = {
+  xxs: moderateScale(10),
   xs: moderateScale(12),
   sm: moderateScale(14),
   md: moderateScale(16),
@@ -74,8 +76,10 @@ export const BORDER_RADIUS = {
   xs: scale(4),
   sm: scale(8),
   md: scale(12),
+  md_ex: scale(14),
   lg: scale(16),
   xl: scale(24),
+  xxl: scale(32),
   round: scale(9999),
 };
 
@@ -96,6 +100,10 @@ export const BUTTON_SIZE = {
   },
   md: {
     height: verticalScale(44),
+    padding: scale(16),
+  },
+  mdBtn: {
+    height: verticalScale(52),
     padding: scale(16),
   },
   lg: {

@@ -1,3 +1,5 @@
+import {Region} from 'react-native-maps';
+
 export type RootStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
@@ -21,18 +23,30 @@ export type RootStackParamList = {
         longitude?: number;
         manual?: boolean;
         searchText?: string;
-        region?: any;
+        region?: Region;
       }
     | undefined;
-  MapLocationScreen:
+  MapLocation:
     | {
         latitude?: number;
         longitude?: number;
         manual?: boolean;
         searchText?: string;
-        region?: any;
+        region?: Region;
       }
     | undefined;
+  SuccessLocation:
+    | {
+        serviceable: boolean;
+      }
+    | undefined;
+  Subscribe: undefined;
+  PaymentMethod: undefined;
+  AddCard: undefined;
+  SuccessSubscribe: undefined;
+  Dashboard: undefined;
+  MainTabs: undefined;
+  PlantDetails: undefined;
 };
 
 export type AuthStackParamList = {

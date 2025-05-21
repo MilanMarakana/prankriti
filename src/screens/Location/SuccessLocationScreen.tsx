@@ -33,7 +33,13 @@ const SuccessLocationScreen = ({navigation, route}: any) => {
         />
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation?.goBack?.()}>
+          onPress={() => {
+            if (serviceable) {
+              navigation.navigate('Subscribe');
+            } else {
+              navigation?.goBack?.();
+            }
+          }}>
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
       </View>

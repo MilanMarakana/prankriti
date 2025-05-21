@@ -84,3 +84,68 @@ export const validateSignUpForm = (
     },
   };
 };
+
+export const validateCardHolder = (name: string): ValidationError => {
+  if (!name.trim()) {
+    return {isValid: false, error: 'Cardholder name is required'};
+  }
+  return {isValid: true, error: ''};
+};
+
+export const validateCardNumber = (number: string): ValidationError => {
+  const cleaned = number.replace(/\s/g, '');
+  if (!cleaned) {
+    return {isValid: false, error: 'Card number is required'};
+  }
+  if (cleaned.length < 16) {
+    return {isValid: false, error: 'Card number must be 16 digits'};
+  }
+  return {isValid: true, error: ''};
+};
+
+export const validateExpiry = (expiry: string): ValidationError => {
+  if (!expiry.trim()) {
+    return {isValid: false, error: 'Expiry date is required'};
+  }
+  if (!/^\d{2} \/ \d{2}$/.test(expiry)) {
+    return {isValid: false, error: 'Expiry must be in MM / YY format'};
+  }
+  // Optionally, add logic to check if expiry is in the future
+  return {isValid: true, error: ''};
+};
+
+export const validateCVV = (cvv: string): ValidationError => {
+  if (!cvv.trim()) {
+    return {isValid: false, error: 'CVV is required'};
+  }
+  if (!/^\d{3,4}$/.test(cvv)) {
+    return {isValid: false, error: 'CVV must be 3 or 4 digits'};
+  }
+  return {isValid: true, error: ''};
+};
+
+export const validateCardForm = (
+  cardHolder: string,
+  cardNumber: string,
+  expiry: string,
+  cvv: string,
+) => {
+  const nameValidation = validateCardHolder(cardHolder);
+  const numberValidation = validateCardNumber(cardNumber);
+  const expiryValidation = validateExpiry(expiry);
+  const cvvValidation = validateCVV(cvv);
+
+  return {
+    isValid:
+      nameValidation.isValid &&
+      numberValidation.isValid &&
+      expiryValidation.isValid &&
+      cvvValidation.isValid,
+    errors: {
+      cardHolder: nameValidation.error,
+      cardNumber: numberValidation.error,
+      expiry: expiryValidation.error,
+      cvv: cvvValidation.error,
+    },
+  };
+};

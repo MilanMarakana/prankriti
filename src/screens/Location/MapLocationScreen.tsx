@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -19,7 +19,9 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
+import {SelectLocationParams} from '../../types/location';
+import locationService from '../../services/locationService';
 
 // Google Maps dark style
 const MAP_DARK_STYLE = [
@@ -105,17 +107,8 @@ const MAP_DARK_STYLE = [
   },
 ];
 
-// Define params locally
-export type SelectLocationParams = {
-  latitude?: number;
-  longitude?: number;
-  manual?: boolean;
-  searchText?: string;
-  region?: Region;
-};
-
 const INITIAL_REGION: Region = {
-  latitude: 19.0968, // Default to New Delhi
+  latitude: 19.0968,
   longitude: 72.8517,
   latitudeDelta: 0.01,
   longitudeDelta: 0.01,
@@ -123,26 +116,6 @@ const INITIAL_REGION: Region = {
 
 const REFERENCE_PINCODE = '400022';
 const SERVICE_RADIUS_KM = 10;
-
-function getDistanceFromLatLonInKm(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number,
-) {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c;
-  return d;
-}
 
 const MapLocationScreen = () => {
   const navigation =
@@ -162,22 +135,15 @@ const MapLocationScreen = () => {
   } | null>(null);
   const [isServicable, setIsServicable] = useState(true);
 
-  // Fetch address from Google Maps Geocoding API
   const fetchAddress = async (lat: number, lng: number) => {
     setLoading(true);
     try {
-      const GOOGLE_MAPS_API_KEY = 'AIzaSyBHmAdy8oCV1hv5AQTdwcv4q6wz-tenXlQ'; // Replace with your real key
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`,
-      );
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        // _setAddress(data.results[0].formatted_address);
-      } else {
-        // _setAddress('Service will be provided here');
-      }
+      await locationService.getAddressFromCoordinates({
+        latitude: lat,
+        longitude: lng,
+      });
     } catch (e) {
-      // _setAddress('Service will be provided here');
+      console.error('Error fetching address:', e);
     } finally {
       setLoading(false);
     }
@@ -188,33 +154,32 @@ const MapLocationScreen = () => {
     fetchAddress(reg.latitude, reg.longitude);
   };
 
-  // Fetch address when region changes
-  React.useEffect(() => {
+  useEffect(() => {
     fetchAddress(region.latitude, region.longitude);
   }, [region.latitude, region.longitude]);
 
-  // Geocode the reference pincode on mount
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchReferenceCoords = async () => {
       try {
-        const GOOGLE_MAPS_API_KEY = 'AIzaSyBHmAdy8oCV1hv5AQTdwcv4q6wz-tenXlQ';
-        const res = await fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?address=${REFERENCE_PINCODE}&key=${GOOGLE_MAPS_API_KEY}`,
+        const result = await locationService.getCoordinatesFromPostalCode(
+          REFERENCE_PINCODE,
         );
-        const data = await res.json();
-        if (data.results && data.results.length > 0) {
-          const {lat, lng} = data.results[0].geometry.location;
-          setReferenceCoords({lat, lng});
+        if (result) {
+          setReferenceCoords({
+            lat: result.geometry.location.lat,
+            lng: result.geometry.location.lng,
+          });
         }
-      } catch {}
+      } catch (error) {
+        console.error('Error fetching reference coordinates:', error);
+      }
     };
     fetchReferenceCoords();
   }, []);
 
-  // Check if region is within service radius whenever region or referenceCoords changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (referenceCoords) {
-      const dist = getDistanceFromLatLonInKm(
+      const dist = locationService.calculateDistance(
         region.latitude,
         region.longitude,
         referenceCoords.lat,
@@ -224,30 +189,21 @@ const MapLocationScreen = () => {
     }
   }, [region, referenceCoords]);
 
-  const geocodePostalCode = async (
-    postalCode: string,
-    updateRegion: (region: Region) => void,
-    targetMapRef: React.RefObject<MapView | null>,
-  ) => {
+  const handlePostalCodeSearch = async (postalCode: string) => {
     try {
-      const GOOGLE_MAPS_API_KEY = 'AIzaSyBHmAdy8oCV1hv5AQTdwcv4q6wz-tenXlQ'; // Use your real key
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-          postalCode,
-        )}&key=${GOOGLE_MAPS_API_KEY}`,
+      const result = await locationService.getCoordinatesFromPostalCode(
+        postalCode,
       );
-      const data = await res.json();
-      if (data.results && data.results.length > 0) {
-        const {lat, lng} = data.results[0].geometry.location;
+      if (result) {
         const newRegion = {
-          latitude: lat,
-          longitude: lng,
+          latitude: result.geometry.location.lat,
+          longitude: result.geometry.location.lng,
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         };
-        updateRegion(newRegion);
-        if (targetMapRef.current) {
-          targetMapRef.current.animateToRegion(newRegion, 1000);
+        setRegion(newRegion);
+        if (mapRef.current) {
+          mapRef.current.animateToRegion(newRegion, 1000);
         }
       } else {
         Alert.alert('No location found for this postal code.');
@@ -279,9 +235,7 @@ const MapLocationScreen = () => {
         </Marker>
       </MapView>
 
-      {/* Overlay UI */}
       <SafeAreaView style={styles.overlayContainer} pointerEvents="box-none">
-        {/* Back button and title */}
         <View style={styles.headerRow}>
           <TouchableOpacity
             style={styles.backBtn}
@@ -290,7 +244,6 @@ const MapLocationScreen = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Enter your area pin code</Text>
         </View>
-        {/* Search bar */}
         <View style={styles.searchBarContainer}>
           <Ionicons
             name="search"
@@ -304,12 +257,11 @@ const MapLocationScreen = () => {
             placeholderTextColor={COLORS.LIGHT_WHITE}
             value={search}
             onChangeText={setSearch}
-            onSubmitEditing={() => geocodePostalCode(search, setRegion, mapRef)}
+            onSubmitEditing={() => handlePostalCodeSearch(search)}
           />
         </View>
       </SafeAreaView>
 
-      {/* Pin address info */}
       <View style={styles.pinAddressContainer} pointerEvents="none">
         <View style={styles.addressBox}>
           <Text style={styles.addressText}>
@@ -325,7 +277,6 @@ const MapLocationScreen = () => {
         </View>
       </View>
 
-      {/* Confirm Button */}
       <TouchableOpacity
         style={styles.confirmBtn}
         onPress={() => {

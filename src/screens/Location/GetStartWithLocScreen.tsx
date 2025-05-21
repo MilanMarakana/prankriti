@@ -18,7 +18,7 @@ import {
 } from '../../constants/responsive';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../../navigation/AppNavigator';
+import {RootStackParamList} from '../../types/navigation';
 import {useLocationStore} from '../../store/locationStore';
 
 const GetStartWithLocScreen = () => {
@@ -58,7 +58,6 @@ const GetStartWithLocScreen = () => {
       setLoading(true);
       setError(null);
 
-      // First check if we have permission
       if (!hasPermission) {
         const permissionGranted = await requestPermission();
         if (!permissionGranted) {
@@ -70,7 +69,6 @@ const GetStartWithLocScreen = () => {
         }
       }
 
-      // Now get the location
       const location = await getCurrentLocation();
       if (location) {
         navigation.navigate('SelectLocation', {
